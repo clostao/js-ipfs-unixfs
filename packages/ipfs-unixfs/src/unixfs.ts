@@ -17,6 +17,7 @@ export interface Data {
   fanout?: bigint
   mode?: number
   mtime?: UnixTime
+  mimeTypes?: string[]
 }
 
 export namespace Data {
@@ -95,6 +96,13 @@ export namespace Data {
           UnixTime.codec().encode(obj.mtime, w)
         }
 
+        if (obj.mimeTypes != null) {
+          for (const mimeType of obj.mimeTypes) {
+            w.uint32(74)
+            w.string(mimeType)
+          }
+        }
+
         if (opts.lengthDelimited !== false) {
           w.ldelim()
         }
@@ -107,7 +115,6 @@ export namespace Data {
 
         while (reader.pos < end) {
           const tag = reader.uint32()
-
           switch (tag >>> 3) {
             case 1:
               obj.Type = Data.DataType.codec().decode(reader)
@@ -132,6 +139,10 @@ export namespace Data {
               break
             case 8:
               obj.mtime = UnixTime.codec().decode(reader, reader.uint32())
+              break
+            case 9:
+              obj.mimeTypes = obj.mimeTypes ?? []
+              obj.mimeTypes.push(reader.string())
               break
             default:
               reader.skipType(tag & 7)

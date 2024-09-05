@@ -125,6 +125,7 @@ export interface UnixFSOptions {
   fanout?: bigint
   mtime?: Mtime
   mode?: number
+  mimeTypes?: string[]
 }
 
 class UnixFS {
@@ -145,7 +146,8 @@ class UnixFS {
             nsecs: message.mtime.FractionalNanoseconds
           }
         : undefined,
-      fanout: message.fanout
+      fanout: message.fanout,
+      mimeTypes: message.mimeTypes
     })
 
     // make sure we honour the original mode
@@ -160,6 +162,7 @@ class UnixFS {
   public hashType?: bigint
   public fanout?: bigint
   public mtime?: Mtime
+  public mimeTypes: string[]
 
   private _mode?: number
   private _originalMode: number
@@ -174,7 +177,8 @@ class UnixFS {
       hashType,
       fanout,
       mtime,
-      mode
+      mode,
+      mimeTypes
     } = options
 
     if (type != null && !Object.values(types).includes(type)) {
@@ -188,6 +192,7 @@ class UnixFS {
     this.blockSizes = blockSizes ?? []
     this._originalMode = 0
     this.mode = mode
+    this.mimeTypes = mimeTypes ?? []
     this.mtime = mtime
   }
 
@@ -290,9 +295,10 @@ class UnixFS {
       hashType: this.hashType,
       fanout: this.fanout,
       mode,
-      mtime
+      mtime,
+      mimeTypes: this.mimeTypes
     })
   }
 }
 
-export { UnixFS }
+export { UnixFS, PBData as Data }

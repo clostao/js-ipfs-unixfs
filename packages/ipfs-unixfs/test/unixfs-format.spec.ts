@@ -49,6 +49,16 @@ describe('unixfs-format', () => {
     expect(data.fileSize()).to.deep.equal(unmarshaled.fileSize())
   })
 
+  it('directory with mimeTypes', () => {
+    const data = new UnixFS({
+      type: 'directory',
+      mimeTypes: ['text/plain']
+    })
+    const marshaled = data.marshal()
+    const unmarshaled = UnixFS.unmarshal(marshaled)
+    expect(unmarshaled.mimeTypes).to.deep.equal(['text/plain'])
+  })
+
   it('hamt-sharded-directory', () => {
     const data = new UnixFS({
       type: 'hamt-sharded-directory'
@@ -72,6 +82,16 @@ describe('unixfs-format', () => {
     expect(data.data).to.deep.equal(unmarshaled.data)
     expect(data.blockSizes).to.deep.equal(unmarshaled.blockSizes)
     expect(data.fileSize()).to.deep.equal(unmarshaled.fileSize())
+  })
+
+  it('file with mimeTypes', () => {
+    const data = new UnixFS({
+      type: 'file',
+      mimeTypes: ['text/plain']
+    })
+    const marshaled = data.marshal()
+    const unmarshaled = UnixFS.unmarshal(marshaled)
+    expect(unmarshaled.mimeTypes).to.deep.equal(['text/plain'])
   })
 
   it('file add blocksize', () => {

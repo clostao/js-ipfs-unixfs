@@ -18,6 +18,7 @@ message Data {
   optional uint64 fanout = 6;
   optional uint32 mode = 7;
   optional UnixTime mtime = 8;
+  repeated string mimeTypes = 9;
 }
 
 message UnixTime {
