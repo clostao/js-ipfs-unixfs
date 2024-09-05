@@ -108,7 +108,9 @@ const reduce = (
 
       if (
         isSingleBlockImport(leaf) &&
-        (file.mtime !== undefined || file.mode !== undefined)
+        (file.mtime !== undefined ||
+          file.mode !== undefined ||
+          file.mimeTypes !== undefined)
       ) {
         // only one leaf node which is a raw leaf - we have metadata so convert it into a
         // UnixFS entry otherwise we'll have nowhere to store the metadata
@@ -116,7 +118,8 @@ const reduce = (
           type: 'file',
           mtime: file.mtime,
           mode: file.mode,
-          data: leaf.block
+          data: leaf.block,
+          mimeTypes: file.mimeTypes
         })
 
         node = { Data: leaf.unixfs.marshal(), Links: [] }
@@ -145,16 +148,20 @@ const reduce = (
         path: file.path,
         unixfs: leaf.unixfs,
         size: leaf.size,
-        originalPath: leaf.originalPath
+        originalPath: leaf.originalPath,
+        mimeTypes: file.mimeTypes
       }
     }
 
     // create a parent node and add all the leaves
+
     const f = new UnixFS({
       type: 'file',
       mtime: file.mtime,
-      mode: file.mode
+      mode: file.mode,
+      mimeTypes: file.mimeTypes
     })
+
 
     const links: PBLink[] = leaves
       .filter((leaf) => {
@@ -254,5 +261,5 @@ export const defaultFileBuilder = async (
   return options.layout(
     buildFileBatch(file, block, options),
     reduce(file, block, options)
-  );
-};
+  )
+}

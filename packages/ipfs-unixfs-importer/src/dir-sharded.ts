@@ -1,7 +1,7 @@
 import { encode, type PBLink, prepare } from '@ipld/dag-pb'
 import { murmur3128 } from '@multiformats/murmur3'
 import { createHAMT, Bucket, type BucketChild } from 'hamt-sharding'
-import { UnixFS } from 'ipfs-unixfs'
+import { Data, UnixFS } from 'ipfs-unixfs'
 import { Dir, CID_V0, CID_V1, type DirProps } from './dir.js'
 import { persist, type PersistOptions } from './utils/persist.js'
 import type { ImportResult, InProgressImportResult } from './index.js'
@@ -95,6 +95,7 @@ async function * flush (bucket: Bucket<Dir | InProgressImportResult>, blockstore
   const children = bucket._children
   const padLength = (bucket.tableSize() - 1).toString(16).length
   const links: PBLink[] = []
+  const mimeTypes: string[] = []
   let childrenSize = 0n
 
   for (let i = 0; i < children.length; i++) {
@@ -122,6 +123,7 @@ async function * flush (bucket: Bucket<Dir | InProgressImportResult>, blockstore
         Tsize: Number(shard.size),
         Hash: shard.cid
       })
+      mimeTypes.push(Data.DataType.HAMTShard)
       childrenSize += shard.size
     } else if (isDir(child.value)) {
       const dir = child.value
@@ -137,6 +139,7 @@ async function * flush (bucket: Bucket<Dir | InProgressImportResult>, blockstore
         throw new Error('Did not flush dir')
       }
 
+      mimeTypes.push(Data.DataType.Directory)
       const label = labelPrefix + child.key
       links.push({
         Name: label,
@@ -160,6 +163,7 @@ async function * flush (bucket: Bucket<Dir | InProgressImportResult>, blockstore
         Tsize: Number(size),
         Hash: value.cid
       })
+      mimeTypes.push(Data.DataType.File)
       childrenSize += BigInt(size ?? 0)
     }
   }
@@ -173,7 +177,8 @@ async function * flush (bucket: Bucket<Dir | InProgressImportResult>, blockstore
     fanout: BigInt(bucket.tableSize()),
     hashType: HAMT_HASH_CODE,
     mtime: shardRoot?.mtime,
-    mode: shardRoot?.mode
+    mode: shardRoot?.mode,
+    mimeTypes
   })
 
   const node = {

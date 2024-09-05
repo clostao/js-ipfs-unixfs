@@ -132,7 +132,8 @@ export function defaultDagBuilder (options: DagBuilderOptions): DAGBuilder {
               yield chunk
             }
           })(),
-          originalPath
+          originalPath,
+          mimeTypes: entry.mimeTypes
         }
 
         const fileBuilder = options.fileBuilder ?? defaultFileBuilder

@@ -42,7 +42,8 @@ async function addToTree (elem: InProgressImportResult, tree: Dir, options: AddT
           dirty: true,
           flat: true,
           mtime: dir?.unixfs?.mtime,
-          mode: dir?.unixfs?.mode
+          mode: dir?.unixfs?.mode,
+          mimeTypes: dir?.unixfs?.mimeTypes
         }, options)
       }
 

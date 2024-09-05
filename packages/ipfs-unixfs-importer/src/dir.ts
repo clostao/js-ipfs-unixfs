@@ -14,6 +14,7 @@ export interface DirProps {
   unixfs?: UnixFS
   mode?: number
   mtime?: Mtime
+  mimeTypes?: string[]
 }
 
 export abstract class Dir {

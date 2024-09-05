@@ -90,6 +90,7 @@ export interface FileCandidate<T extends ImportContent = ImportContent> {
   content: T
   mtime?: Mtime
   mode?: number
+  mimeTypes?: string[]
 }
 
 export interface DirectoryCandidate {
@@ -106,6 +107,7 @@ export interface File {
   mtime?: Mtime
   mode?: number
   originalPath?: string
+  mimeTypes?: string[]
 }
 
 export interface Directory {
@@ -334,7 +336,6 @@ export async function * importer (source: ImportCandidateStream, blockstore: Wri
   const fileImportConcurrency = options.fileImportConcurrency ?? 50
   const blockWriteConcurrency = options.blockWriteConcurrency ?? 10
   const reduceSingleLeafToSelf = options.reduceSingleLeafToSelf ?? true
-
 
   const chunker = options.chunker ?? fixedSize()
   const chunkValidator = options.chunkValidator ?? defaultChunkValidator()

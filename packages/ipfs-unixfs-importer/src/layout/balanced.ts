@@ -15,7 +15,8 @@ export function balanced (options?: BalancedOptions): FileLayout {
     const roots = []
 
     for await (const chunked of batch(source, maxChildrenPerNode)) {
-      roots.push(await reduce(chunked))
+      const root = await reduce(chunked)
+      roots.push(root)
     }
 
     if (roots.length > 1) {
